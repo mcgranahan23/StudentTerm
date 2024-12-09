@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="StudentTerm.MainSceneController">
+    <Button text="Add Student" onAction="#handleAddStudent"/>
+    <Button text="Add Term" onAction="#handleAddTerm"/>
+    <Button text="View All Students with Terms" onAction="#handlePrintAll"/>
+</VBox>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="403.0" prefWidth="564.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="StudentTerm.MainSceneController">
+    <children>
+        <HBox alignment="CENTER" prefHeight="222.0" prefWidth="564.0">
+            <children>
+                <Button fx:id="addStudent" alignment="CENTER" onAction="#handleAddStudent" prefHeight="90.0" prefWidth="256.0" text="Add Student" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="addTerm" alignment="CENTER" contentDisplay="CENTER" onAction="#handleAddTerm" prefHeight="90.0" prefWidth="256.0" text="Add Term">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="printAll" alignment="CENTER" contentDisplay="CENTER" onAction="#handlePrintAll" prefHeight="90.0" prefWidth="256.0" text="Print All Students with Terms">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </HBox.margin>
+                </Button>
+                <Group />
+            </children>
+        </HBox>
+    </children>
+</VBox>

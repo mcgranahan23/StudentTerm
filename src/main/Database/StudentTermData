@@ -1,0 +1,19 @@
+-- Create Terms Table
+CREATE TABLE IF NOT EXISTS Terms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    start TEXT,
+    name TEXT NOT NULL,
+    dates TEXT,
+    description TEXT,
+    chargeAmount REAL,
+    payment REAL
+);
+
+-- Create StudentTerms Join Table
+CREATE TABLE IF NOT EXISTS StudentTerms (
+    studentId INTEGER,
+    termId INTEGER,
+    PRIMARY KEY (studentId, termId),
+    FOREIGN KEY (studentId) REFERENCES Students(id),
+    FOREIGN KEY (termId) REFERENCES Terms(id)
+);

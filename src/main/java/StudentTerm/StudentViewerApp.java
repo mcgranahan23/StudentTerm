@@ -2,7 +2,9 @@ package StudentTerm;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
@@ -11,6 +13,7 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
 public class StudentViewerApp extends Application {
 
@@ -23,49 +26,95 @@ public class StudentViewerApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Student Viewer");
-
-        dataOperations = new DataOperations();
-        // Initialize the database using DataOperations
-        dataOperations.initializeDatabase();
-        // Populate the database with initial data
-        dataOperations.populateInitialData();
-
-        // Set up the table
-        tableView = new TableView<>();
+        setupStage(primaryStage);
+        initializeData();
         setupTable();
-
-        // Load data from the database
         loadDataFromDatabase();
+    }
 
-        // Layout
+    private void setupStage(Stage primaryStage) {
+        tableView = new TableView<>();
         VBox vbox = new VBox(tableView);
         Scene scene = new Scene(vbox);
 
+        primaryStage.setTitle("Student Viewer");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    private void initializeData() {
+        dataOperations = new DataOperations();
+
+        // Populate students
+        dataOperations.populateInitialData();
+
+        // Populate generic example terms (Spring 2024, Summer 2024, Fall 2024)
+        List<Term> terms = dataOperations.populateGenericTerms();
+
+        // Get all students from the database
+        List<Student> students = dataOperations.getAllStudents();
+
+        // Link students to terms (example rule: alternate assignments, or other logic)
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            Term term = terms.get(i % terms.size()); // Alternate between the available terms
+            dataOperations.linkStudentToTerm(student.getId(), term.getId());
+        }
+    }
+
     private void setupTable() {
-        TableColumn<Student, Integer> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        addTableColumn("ID", "id");
+        addTableColumn("Name", "name");
+        addTableColumn("Address", "address");
+        addTableColumn("City", "city");
+        addTableColumn("State", "state");
+        addTableColumn("Zip", "zip");
 
-        TableColumn<Student, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableView.setRowFactory(tv -> {
+            TableRow<Student> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    // Fetch and show term details for the selected student
+                    showTermDetails(row.getItem().getId());
+                }
+            });
+            return row;
+        });
+    }
 
-        TableColumn<Student, String> addressColumn = new TableColumn<>("Address");
-        addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+    private <T> void addTableColumn(String title, String property) {
+        TableColumn<Student, T> column = new TableColumn<>(title);
+        column.setCellValueFactory(new PropertyValueFactory<>(property));
+        tableView.getColumns().add(column);
+    }
 
-        TableColumn<Student, String> cityColumn = new TableColumn<>("City");
-        cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
+    private void showTermDetails(int studentId) {
+        // Fetch the term linked to the student using DataOperations
+        Term term = dataOperations.getTermByStudentId(studentId);
 
-        TableColumn<Student, String> stateColumn = new TableColumn<>("State");
-        stateColumn.setCellValueFactory(new PropertyValueFactory<>("state"));
+        if (term != null) {
+            // Show term details
+            showAlert(Alert.AlertType.INFORMATION, "Term Details",
+                    "Linked Term for the Selected Student",
+                    "Term Name: " + term.getName() +
+                            "\nStart Date: " + term.getStart() +
+                            "\nDates: " + term.getDates() +
+                            "\nDescription: " + term.getDescription() +
+                            "\nCharge Amount: $" + term.getChargeAmount() +
+                            "\nPayment: $" + term.getPayment());
+        } else {
+            // Show warning if no term is linked
+            showAlert(Alert.AlertType.WARNING, "No Term Found", null,
+                    "The selected student does not have a linked term.");
+        }
+    }
 
-        TableColumn<Student, Integer> zipColumn = new TableColumn<>("Zip");
-        zipColumn.setCellValueFactory(new PropertyValueFactory<>("zip"));
-
-        tableView.getColumns().addAll(idColumn, nameColumn, addressColumn, cityColumn, stateColumn, zipColumn);
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     private void loadDataFromDatabase() {
@@ -84,9 +133,15 @@ public class StudentViewerApp extends Application {
                 );
                 tableView.getItems().add(student);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void stop() {
+        // Close the shared database connection on application shutdown
+        DatabaseManager.closeConnection();
+        System.out.println("Application stopped.");
     }
 }

@@ -8,6 +8,7 @@ public class Term {
     private static final List<Term> terms = new ArrayList<>();
     private static final Scanner reader = new Scanner(System.in);
 
+    private int id; // Unique ID for each term
     private String start;
     private String name;
     private String dates;
@@ -15,13 +16,19 @@ public class Term {
     private double chargeAmount;
     private double payment;
 
-    private Term(String start, String name, String dates, String description, double chargeAmount, double payment) {
+    public Term(int id, String start, String name, String dates, String description, double chargeAmount, double payment) {
+        this.id = id; // Assign the unique term ID
         this.start = start;
         this.name = name;
         this.dates = dates;
         this.description = description;
         this.chargeAmount = chargeAmount;
         this.payment = payment;
+    }
+
+    // Getter for id
+    public int getId() {
+        return id;
     }
 
     // Getter for start
@@ -67,7 +74,8 @@ public class Term {
             System.out.printf("Start Date - %s%nName - %s%nDates - %s%nDescription - %s%nCharge Amount - %.2f%nPayment - %.2f%n", start, name, dates, description, chargeAmount, payment);
             System.out.println("*Is this correct?*\n1.) Yes\n2.) No");
             if (reader.nextInt() == 1) {
-                Term term = new Term(start, name, dates, description, chargeAmount, payment);
+                int id = terms.size() + 1; // Generate a unique ID based on list size (or specify manually)
+                Term term = new Term(id, start, name, dates, description, chargeAmount, payment);
                 terms.add(term);
                 return term;
             }
@@ -104,7 +112,7 @@ public class Term {
 
     @Override
     public String toString() {
-        return String.format("Term - %s%nStart: %s%nDates: %s%nDescription: %s%nCharge Amount: %.2f%nPayment: %.2f%n",
-                name, start, dates, description, chargeAmount, payment);
+        return String.format("ID: %d%nTerm - %s%nStart: %s%nDates: %s%nDescription: %s%nCharge Amount: %.2f%nPayment: %.2f%n",
+                id, name, start, dates, description, chargeAmount, payment);
     }
 }

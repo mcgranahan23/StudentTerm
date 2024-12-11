@@ -11,6 +11,8 @@ public class Student {
     private String city;
     private String state;
     private int zip;
+    private static final List<Student> students = new ArrayList<>();
+    private static final Scanner reader = new Scanner(System.in);
 
     // Constructor
     public Student(Integer id, String name, String address, String city, String state, int zip) {
@@ -24,6 +26,10 @@ public class Student {
 
     // Getters and setters (if not already present)
     public Integer getId() {
+        if (this.id == null) {
+            throw new IllegalStateException("Student ID is not initialized.");
+        }
+
         return id;
     }
 
